@@ -44,6 +44,13 @@ export default function Page() {
             onPress={toSettingScreen}
             titleStyle={{ fontSize: 20 }}
           />
+          <Button
+            icon={<Icon name="ios-information-circle-outline" size={24} color="white" />}
+            title="テスト画面へ"
+            buttonStyle={styles.button}
+            onPress={() => router.push({ pathname: "/timer" })}
+            titleStyle={{ fontSize: 20 }} 
+          />
       </View>
     </View>
   );
