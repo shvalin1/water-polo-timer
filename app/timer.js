@@ -1,13 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { StyleSheet, View, TouchableOpacity } from "react-native";
-import {
-  CheckBox,
-  Button,
-  Input,
-  ThemeProvider,
-  Text,
-} from "react-native-elements";
-import { Link, useRouter } from "expo-router";
+import { Text } from "react-native-elements";
 import "expo-router/entry";
 import moment from "moment";
 
@@ -16,6 +9,7 @@ export default function Page() {
   const [start, setStart] = useState(0);
   const [intervalId, setIntervalId] = useState();
   const [lastLap, setLastLap] = useState(0);
+  const [gameTime, setGameTime] = useState(30000);
   const [isStarted, setIsStarted] = useState(false);
 
   useEffect(() => {
@@ -59,30 +53,29 @@ export default function Page() {
   const Timer = ({ interval, style }) => {
     const pad = (n) => (n < 10 ? "0" + n : n);
     const duration = moment.duration(interval);
-    const centimes = Math.floor(duration.milliseconds() / 10);
+    const centiseconds = Math.floor(duration.milliseconds() / 100);
     return (
       <View style={styles.timerContainer}>
         {duration.minutes() < 0 ? (
           <React.Fragment>
             <Text style={style}>00</Text>
             <Text style={style}>00</Text>
-            <Text style={style}>00</Text>
+            <Text style={style}>0</Text>
           </React.Fragment>
         ) : (
           <React.Fragment>
             <Text style={style}>{pad(duration.minutes())}</Text>
             <Text style={style}>{pad(duration.seconds())}</Text>
-            <Text style={style}>{pad(centimes)}</Text>
+            <Text style={style}>{centiseconds}</Text>
           </React.Fragment>
         )}
       </View>
     );
   };
-
   return (
     <React.Fragment>
       <Timer
-        interval={lastLap + now - start}
+        interval={gameTime - (lastLap + now - start)}
         style={styles.timer}
       />
       {!isStarted && (
