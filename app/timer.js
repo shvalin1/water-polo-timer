@@ -25,20 +25,24 @@ export default function Page() {
   const [start, setStart] = useState(0);
   const [intervalId, setIntervalId] = useState();
   const [lastLap, setLastLap] = useState(0);
-  const [gameTime, setGameTime] = useState(300000);
+  const [gameTime, setGameTime] = useState(3000);
   const [isStarted, setIsStarted] = useState(false);
-  const [secondTimerNow, setSecondTimerNow] = useState(0);
-  const [secondTimerStart, setSecondTimerStart] = useState(0);
-  const [secondTimerIntervalId, setSecondTimerIntervalId] = useState();
-  const [secondTimerLastLap, setSecondTimerLastLap] = useState(0);
-  const [secondTimerGameTime, setSecondTimerGameTime] = useState(30000);
-  const [secondTimerIsStarted, setSecondTimerIsStarted] = useState(false);
-  const [isTimerLinked, setIsTimerLinked] = useState(true);
+  const [ShotTimerNow, setShotTimerNow] = useState(0);
+  const [ShotTimerStart, setShotTimerStart] = useState(0);
+  const [ShotTimerIntervalId, setShotTimerIntervalId] = useState();
+  const [ShotTimerLastLap, setShotTimerLastLap] = useState(0);
+  const [ShotTimerGameTime, setShotTimerGameTime] = useState(30000);
+  const [ShotTimerIsStarted, setShotTimerIsStarted] = useState(false);
+  const [isTimerLinked, setIsTimerLinked] = useState(false);
   const [teamAName, setTeamAName] = useState("Blue"); // チームAの名前
   const [teamBName, setTeamBName] = useState("White"); // チームBの名前
   const [teamScores, setTeamScores] = useState({ teamA: 0, teamB: 0 }); // 得点
   const [isGamePaused, setIsGamePaused] = useState(true); // 一時停止状態
   const [isShotClockPaused, setIsShotClockPaused] = useState(true); // ショットクロックの一時停止状態
+  const [shotTimer, setShotTimer] = useState(30000); // ショットクロックの初期値
+  const [timerLinkedFrom, setTimerLinkedFrom] = useState(60000); // タイマー連動元
+  const [shotTimerBlackout, setShotTimerBlackout] = useState(false); // ショットクロックのブラックアウト状態
+  const [isFinished, setIsFinished] = useState(false); // ゲーム終了状態
 
   const router = useRouter();
 
@@ -49,8 +53,29 @@ export default function Page() {
 
   useEffect(() => {
     // component will unmount
-    return () => clearInterval(secondTimerIntervalId);
-  }, [secondTimerIntervalId]); // secondTimerIntervalId を依存配列に追加
+    return () => clearInterval(ShotTimerIntervalId);
+  }, [ShotTimerIntervalId]); // ShotTimerIntervalId を依存配列に追加
+
+  useEffect(() => {
+    if (gameTime - (lastLap + now - start) <= timerLinkedFrom) {
+      setIsTimerLinked(true);
+    }
+    if (gameTime - (lastLap + now - start) <= 0) {
+      doubleTimerStop();
+      setIsFinished(true);
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    }
+  }, [gameTime, lastLap, now, start]);
+
+  useEffect(() => {
+    if (
+      ShotTimerGameTime - (ShotTimerLastLap + ShotTimerNow - ShotTimerStart) <=
+      0
+    ) {
+      isTimerLinked ? doubleTimerStop() : handleShotTimerStop();
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    }
+  }, [ShotTimerGameTime, ShotTimerLastLap, ShotTimerNow, ShotTimerStart]);
 
   const handleStart = () => {
     const id = setInterval(() => {
@@ -88,29 +113,28 @@ export default function Page() {
   };
 
   // 新しいタイマーの関数を追加
-  const handleSecondTimerStart = () => {
+  const handleShotTimerStart = () => {
     const id = setInterval(() => {
-      setSecondTimerNow(new Date().getTime());
+      setShotTimerNow(new Date().getTime());
     }, 100);
-    setSecondTimerIntervalId(id);
-    setSecondTimerStart(new Date().getTime());
-    setSecondTimerLastLap(0);
-    setSecondTimerIsStarted(true);
+    setShotTimerIntervalId(id);
+    setShotTimerStart(new Date().getTime());
+    setShotTimerLastLap(0);
+    setShotTimerIsStarted(true);
     setIsShotClockPaused(false);
   };
 
-  const handleSecondTimerStop = () => {
-    clearInterval(secondTimerIntervalId);
-    setSecondTimerLastLap(
-      secondTimerLastLap + secondTimerNow - secondTimerStart
-    );
-    setSecondTimerStart(0);
-    setSecondTimerNow(0);
+  const handleShotTimerStop = () => {
+    clearInterval(ShotTimerIntervalId);
+    setShotTimerLastLap(ShotTimerLastLap + ShotTimerNow - ShotTimerStart);
+    setShotTimerStart(0);
+    setShotTimerNow(0);
     setIsShotClockPaused(true);
   };
+
   const doubleTimerStart = () => {
     handleResume();
-    handleSecondTimerResume();
+    handleShotTimerResume();
     setIsGamePaused(false);
     setIsShotClockPaused(false);
     setIsStarted(true);
@@ -118,38 +142,33 @@ export default function Page() {
 
   const doubleTimerStop = () => {
     handleStop();
-    handleSecondTimerStop();
+    handleShotTimerStop();
   };
 
   const doubleTimerResume = () => {
     handleResume();
-    handleSecondTimerResume();
+    handleShotTimerResume();
   };
 
-  const handleSecondTimerResume = () => {
-    setSecondTimerStart(new Date().getTime());
-    setSecondTimerNow(new Date().getTime());
+  const handleShotTimerResume = () => {
+    setShotTimerStart(new Date().getTime());
+    setShotTimerNow(new Date().getTime());
     const id = setInterval(() => {
-      setSecondTimerNow(new Date().getTime());
+      setShotTimerNow(new Date().getTime());
     }, 100);
-    setSecondTimerIntervalId(id);
+    setShotTimerIntervalId(id);
     setIsShotClockPaused(false);
   };
 
-  const handleSecondTimerReset = () => {
-    setSecondTimerLastLap(0);
-    setSecondTimerStart(0);
-    setSecondTimerNow(0);
-    setSecondTimerGameTime(30000);
-    setSecondTimerIsStarted(false);
-  };
-
-  const handleSecondTimerReset2 = () => {
-    setSecondTimerLastLap(0);
-    setSecondTimerStart(0);
-    setSecondTimerNow(0);
-    setSecondTimerGameTime(20000);
-    setSecondTimerIsStarted(false);
+  const handleShotTimerReset = (resetTime) => {
+    setShotTimerLastLap(0);
+    if (gameTime - (lastLap + now - start) <= resetTime) {
+      setShotTimerBlackout(true);
+    }
+    setShotTimerGameTime(resetTime);
+    if (!isShotClockPaused) {
+      handleShotTimerResume();
+    }
   };
 
   const incrementScore = (team) => {
@@ -196,23 +215,19 @@ export default function Page() {
   }, [isGamePaused, isShotClockPaused, blinkingOpacity]);
 
   const handleOnPressGameTimer = () => {
-    console.log("handleOnPressGameTimer");
     if (isGamePaused) {
-      handleResume();
+      doubleTimerResume();
     } else {
-      handleStop();
+      doubleTimerStop();
     }
-    setIsGamePaused(!isGamePaused);
   };
 
   const handleOnPressShotClock = () => {
-    console.log("handleOnPressShotClock");
     if (isShotClockPaused) {
-      handleSecondTimerResume();
+      isTimerLinked ? doubleTimerResume() : handleShotTimerResume();
     } else {
-      handleSecondTimerStop();
+      isTimerLinked ? doubleTimerStop() : handleShotTimerStop();
     }
-    setIsShotClockPaused(!isShotClockPaused);
   };
 
   const toHomeScreen = () => {
@@ -225,16 +240,31 @@ export default function Page() {
 
   const formatGameTime = (interval) => {
     const duration = moment.duration(interval);
-    const minutes = pad(duration.minutes());
-    const seconds = pad(duration.seconds());
-    return `${minutes}:${seconds}`;
+    let minutes = duration.minutes();
+    let seconds = duration.seconds();
+    const centiseconds = Math.floor(duration.milliseconds() / 10);
+    if (seconds !== gameTime / 1000) {
+      if (centiseconds > 10) {
+        seconds += 1;
+        if (seconds === 60) {
+          minutes += 1;
+          seconds = 0;
+        }
+      }
+    }
+    return `${pad(minutes)}:${pad(seconds)}`;
   };
 
   const formatShotTime = (interval) => {
     const duration = moment.duration(interval);
-    const seconds = pad(duration.seconds());
-    const centiseconds = Math.floor(duration.milliseconds() / 100);
-    return `${seconds}.${centiseconds}`;
+    let seconds = duration.seconds();
+    const centiseconds = Math.floor(duration.milliseconds() / 10);
+    if (seconds !== ShotTimerGameTime / 1000) {
+      if (centiseconds > 10) {
+        seconds += 1;
+      }
+    }
+    return `${seconds}`;
   };
 
   return (
@@ -271,13 +301,13 @@ export default function Page() {
         </TouchableOpacity>
         <View style={styles.buttonContainer}>
           <TouchableOpacity
-            onPress={handleSecondTimerReset2}
+            onPress={() => handleShotTimerReset(20000)}
             style={[styles.resetButton, { backgroundColor: "red" }]}
           >
             <Text style={styles.buttonText}>20</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={handleSecondTimerReset}
+            onPress={() => handleShotTimerReset(30000)}
             style={[styles.resetButton, { backgroundColor: "orange" }]}
           >
             <Text style={styles.buttonText}>30</Text>
@@ -288,17 +318,19 @@ export default function Page() {
         onPress={() => handleOnPressShotClock()}
         style={styles.timerArea}
       >
-        <Animated.Text
-          style={[
-            styles.timer,
-            { opacity: isShotClockPaused ? blinkingOpacity : 1 },
-          ]}
-        >
-          {formatShotTime(
-            secondTimerGameTime -
-              (secondTimerLastLap + secondTimerNow - secondTimerStart)
-          )}
-        </Animated.Text>
+        {!shotTimerBlackout && (
+          <Animated.Text
+            style={[
+              styles.timer,
+              { opacity: isShotClockPaused ? blinkingOpacity : 1 },
+            ]}
+          >
+            {formatShotTime(
+              ShotTimerGameTime -
+                (ShotTimerLastLap + ShotTimerNow - ShotTimerStart)
+            )}
+          </Animated.Text>
+        )}
       </TouchableOpacity>
       <TouchableOpacity onPress={toHomeScreen} style={styles.homeButton}>
         <Icon name="ios-home" size={30} color="black" />
@@ -310,6 +342,16 @@ export default function Page() {
             style={styles.startButton}
           >
             <Text style={styles.startText}>START</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+      {isFinished && (
+        <View style={styles.finishContainer}>
+          <TouchableOpacity
+            onPress={() => toHomeScreen()}
+            style={styles.finishButton}
+          >
+            <Text style={styles.finishText}>ホームへ</Text>
           </TouchableOpacity>
         </View>
       )}
@@ -395,6 +437,26 @@ const styles = StyleSheet.create({
     right: 0,
     margin: 15,
   },
+  finishContainer: {
+    position: "absolute",
+    backgroundColor: "rgba(0,0,0,0.5)",
+    width: width,
+    height: height,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  finishButton: {
+    width: 300,
+    height: 300,
+    borderRadius: 150,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0,200,0,0.9)",
+  },
+  finishText: {
+    fontSize: 75,
+    color: "white",
+  },
 });
 
 //   return (
@@ -438,45 +500,45 @@ const styles = StyleSheet.create({
 //       <Text style={styles.lastLap}>{lastLap}</Text>
 //       <Timer
 //         interval={
-//           secondTimerGameTime -
-//           (secondTimerLastLap + secondTimerNow - secondTimerStart)
+//           ShotTimerGameTime -
+//           (ShotTimerLastLap + ShotTimerNow - ShotTimerStart)
 //         }
 //         style={styles.timer}
 //       />
-//       {!secondTimerIsStarted && (
+//       {!ShotTimerIsStarted && (
 //         <TouchableOpacity
-//           onPress={handleSecondTimerStart}
+//           onPress={handleShotTimerStart}
 //           style={styles.button}
 //         >
 //           <Text>START</Text>
 //         </TouchableOpacity>
 //       )}
-//       {secondTimerStart > 0 && (
+//       {ShotTimerStart > 0 && (
 //         <React.Fragment>
 //           <TouchableOpacity
-//             onPress={handleSecondTimerStop}
+//             onPress={handleShotTimerStop}
 //             style={styles.button}
 //           >
 //             <Text>STOP</Text>
 //           </TouchableOpacity>
 //         </React.Fragment>
 //       )}
-//       {secondTimerIsStarted && secondTimerStart === 0 && (
+//       {ShotTimerIsStarted && ShotTimerStart === 0 && (
 //         <React.Fragment>
 //           <TouchableOpacity
-//             onPress={handleSecondTimerReset}
+//             onPress={handleShotTimerReset}
 //             style={styles.button}
 //           >
 //             <Text>RESET30</Text>
 //           </TouchableOpacity>
 //           <TouchableOpacity
-//             onPress={handleSecondTimerReset2}
+//             onPress={handleShotTimerReset2}
 //             style={styles.button}
 //           >
 //             <Text>RESET20</Text>
 //           </TouchableOpacity>
 //           <TouchableOpacity
-//             onPress={handleSecondTimerResume}
+//             onPress={handleShotTimerResume}
 //             style={styles.button}
 //           >
 //             <Text>RESUME</Text>
@@ -484,7 +546,7 @@ const styles = StyleSheet.create({
 //         </React.Fragment>
 //       )}
 //       <Text style={styles.label}>LAST LAP</Text>
-//       <Text style={styles.lastLap}>{secondTimerLastLap}</Text>
+//       <Text style={styles.lastLap}>{ShotTimerLastLap}</Text>
 //     </React.Fragment>
 //   );
 // }
