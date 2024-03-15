@@ -22,15 +22,23 @@ export default function SettingsPage() {
 
   const toTimerScreen = () => {
     router.push({
-      pathname: "/timerScreen",
+      pathname: "/timer",
       params: {
-        gameTime: parseInt(gameTime, 10),
-        shotTime: parseInt(shotTime, 10),
-        pauseTime: parseInt(pauseTime, 10),
+        gameTime: parseInt(gameTime),
+        shotTime: parseInt(shotTime),
+        pauseTime: parseInt(pauseTime),
         teamAName,
         teamBName,
         pauseLinked,
       },
+    });
+    console.log({
+      gameTime: parseInt(gameTime),
+      shotTime: parseInt(shotTime),
+      pauseTime: parseInt(pauseTime),
+      teamAName,
+      teamBName,
+      pauseLinked,
     });
   };
 

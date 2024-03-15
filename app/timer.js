@@ -12,7 +12,7 @@ import moment from "moment";
 import Constants from "expo-constants";
 import Icon from "react-native-vector-icons/Ionicons";
 import * as Haptics from "expo-haptics";
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 
 const { width, height } = Dimensions.get("window");
 //ステータスバーの高さを取得する
@@ -21,11 +21,12 @@ const statusBarHeight = Platform.OS == "ios" ? Constants.statusBarHeight : 0;
 const standardHeight = (height - statusBarHeight - 300) / 2;
 
 export default function Page() {
+  const params = useLocalSearchParams();
   const [now, setNow] = useState(0);
   const [start, setStart] = useState(0);
   const [intervalId, setIntervalId] = useState();
   const [lastLap, setLastLap] = useState(0);
-  const [gameTime, setGameTime] = useState(3000);
+  const [gameTime, setGameTime] = useState(300000);
   const [isStarted, setIsStarted] = useState(false);
   const [ShotTimerNow, setShotTimerNow] = useState(0);
   const [ShotTimerStart, setShotTimerStart] = useState(0);
@@ -39,12 +40,22 @@ export default function Page() {
   const [teamScores, setTeamScores] = useState({ teamA: 0, teamB: 0 }); // 得点
   const [isGamePaused, setIsGamePaused] = useState(true); // 一時停止状態
   const [isShotClockPaused, setIsShotClockPaused] = useState(true); // ショットクロックの一時停止状態
-  const [shotTimer, setShotTimer] = useState(30000); // ショットクロックの初期値
   const [timerLinkedFrom, setTimerLinkedFrom] = useState(60000); // タイマー連動元
   const [shotTimerBlackout, setShotTimerBlackout] = useState(false); // ショットクロックのブラックアウト状態
   const [isFinished, setIsFinished] = useState(false); // ゲーム終了状態
 
   const router = useRouter();
+
+  useEffect(() => {
+    if (params && params.gameTime && params.shotTime) {
+      setGameTime(params.gameTime * 100);
+      setShotTimerGameTime(params.shotTime * 100);
+      setTimerLinkedFrom(params.pauseTime * 100);
+      setTeamAName(params.teamAName);
+      setTeamBName(params.teamBName);
+    }
+    console.log(params);
+  }, [params]);
 
   useEffect(() => {
     // component will unmount
@@ -307,10 +318,10 @@ export default function Page() {
             <Text style={styles.buttonText}>20</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => handleShotTimerReset(30000)}
+            onPress={() => handleShotTimerReset(params.shotTime * 100)}
             style={[styles.resetButton, { backgroundColor: "orange" }]}
           >
-            <Text style={styles.buttonText}>30</Text>
+            <Text style={styles.buttonText}>{params.shotTime / 10}</Text>
           </TouchableOpacity>
         </View>
       </View>
