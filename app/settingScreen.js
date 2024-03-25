@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { StyleSheet, View, TouchableOpacity } from "react-native";
+import { StyleSheet, View, TouchableOpacity, ScrollView } from "react-native";
 import {
   CheckBox,
   Button,
@@ -8,6 +8,7 @@ import {
   Text,
 } from "react-native-elements";
 import { Link, useRouter } from "expo-router";
+import { AntDesign } from "@expo/vector-icons";
 import "expo-router/entry";
 
 export default function SettingsPage() {
@@ -24,21 +25,13 @@ export default function SettingsPage() {
     router.push({
       pathname: "/timer",
       params: {
-        gameTime: parseInt(gameTime),
-        shotTime: parseInt(shotTime),
-        pauseTime: parseInt(pauseTime),
+        gameTime: parseInt(gameTime * 100),
+        shotTime: parseInt(shotTime * 100),
+        pauseTime: parseInt(pauseTime * 100),
         teamAName,
         teamBName,
         pauseLinked,
       },
-    });
-    console.log({
-      gameTime: parseInt(gameTime),
-      shotTime: parseInt(shotTime),
-      pauseTime: parseInt(pauseTime),
-      teamAName,
-      teamBName,
-      pauseLinked,
     });
   };
 
@@ -63,91 +56,115 @@ export default function SettingsPage() {
 
   return (
     <ThemeProvider theme={theme}>
-      <View style={styles.container}>
-        <Text style={styles.label}>ゲームタイム:</Text>
-        <View style={styles.timeAdjustContainer}>
-          <TouchableOpacity
-            onPress={() =>
-              setGameTime(String(Math.max(1, parseInt(gameTime, 10) - 600)))
-            }
-            style={styles.timeAdjustButton}
-          >
-            <Text>- 1分</Text>
-          </TouchableOpacity>
-          <Text style={styles.timeDisplay}>
-            {Math.floor(parseInt(gameTime, 10) / 600)}分
+      <Link href="/" style={styles.backButton}>
+        <AntDesign name="back" size={24} color="black" />
+        <Text style={styles.backButtonText}>戻る</Text>
+      </Link>
+      <ScrollView>
+        <View style={styles.container}>
+          <Text style={styles.label}>ゲームタイム:</Text>
+          <View style={styles.timeAdjustContainer}>
+            <TouchableOpacity
+              onPress={() =>
+                setGameTime(String(Math.max(1, parseInt(gameTime, 10) - 600)))
+              }
+              style={styles.timeAdjustButton}
+            >
+              <Text>- 1分</Text>
+            </TouchableOpacity>
+            <Text style={styles.timeDisplay}>
+              {Math.floor(parseInt(gameTime, 10) / 600)}分
+            </Text>
+            <TouchableOpacity
+              onPress={() => setGameTime(String(parseInt(gameTime, 10) + 600))}
+              style={styles.timeAdjustButton}
+            >
+              <Text>+ 1分</Text>
+            </TouchableOpacity>
+          </View>
+          <Text style={styles.label}>ショットクロック:</Text>
+          <View style={styles.timeAdjustContainer}>
+            <TouchableOpacity
+              onPress={() =>
+                setShotTime(String(Math.max(0, parseInt(shotTime) - 50)))
+              }
+              style={styles.timeAdjustButton}
+            >
+              <Text>-5秒</Text>
+            </TouchableOpacity>
+            <Text style={styles.timeDisplay}>
+              {Math.floor(parseInt(shotTime) / 10)}秒
+            </Text>
+            <TouchableOpacity
+              onPress={() =>
+                setShotTime(String(Math.min(600, parseInt(shotTime) + 50)))
+              }
+              style={styles.timeAdjustButton}
+            >
+              <Text>+ 5秒</Text>
+            </TouchableOpacity>
+          </View>
+          <Text style={styles.label}>チームAの名前:</Text>
+          <Input value={teamAName} onChangeText={setTeamAName} />
+          <Text style={styles.label}>チームBの名前:</Text>
+          <Input value={teamBName} onChangeText={setTeamBName} />
+          <CheckBox
+            checked={!pauseLinked}
+            onPress={() => setPauseLinked(!pauseLinked)}
+            size={30}
+            title="ゲームタイマーの流しを有効にする"
+          />
+          <Text style={[styles.label, { opacity: !pauseLinked ? 1 : 0 }]}>
+            ゲームタイマーを止める時間:
           </Text>
-          <TouchableOpacity
-            onPress={() => setGameTime(String(parseInt(gameTime, 10) + 600))}
-            style={styles.timeAdjustButton}
+          <View
+            style={[
+              styles.timeAdjustContainer,
+              { opacity: !pauseLinked ? 1 : 0 },
+            ]}
           >
-            <Text>+ 1分</Text>
-          </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() =>
+                setPauseTime(String(Math.max(0, parseInt(pauseTime, 10) - 600)))
+              }
+              style={styles.timeAdjustButton}
+            >
+              <Text>- 1分</Text>
+            </TouchableOpacity>
+            <Text style={styles.timeDisplay}>
+              {Math.floor(parseInt(pauseTime, 10) / 600)}分
+            </Text>
+            <TouchableOpacity
+              onPress={() =>
+                setPauseTime(
+                  String(Math.min(gameTime, parseInt(pauseTime, 10) + 600))
+                )
+              }
+              style={styles.timeAdjustButton}
+            >
+              <Text>+ 1分</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-        <Text style={styles.label}>ショットクロック:</Text>
-        <View style={styles.timeAdjustContainer}>
-          <TouchableOpacity
-            onPress={() =>
-              setShotTime(String(Math.max(0, parseInt(shotTime) - 50)))
-            }
-            style={styles.timeAdjustButton}
-          >
-            <Text>-5秒</Text>
-          </TouchableOpacity>
-          <Text style={styles.timeDisplay}>
-            {Math.floor(parseInt(shotTime) / 10)}秒
-          </Text>
-          <TouchableOpacity
-            onPress={() =>
-              setShotTime(String(Math.min(600, parseInt(shotTime) + 50)))
-            }
-            style={styles.timeAdjustButton}
-          >
-            <Text>+ 5秒</Text>
-          </TouchableOpacity>
-        </View>
-        <Text style={styles.label}>チームAの名前:</Text>
-        <Input value={teamAName} onChangeText={setTeamAName} />
-        <Text style={styles.label}>チームBの名前:</Text>
-        <Input value={teamBName} onChangeText={setTeamBName} />
-        <CheckBox
-          checked={!pauseLinked}
-          onPress={() => setPauseLinked(!pauseLinked)}
-          size={30}
-          title="ゲームタイマーの流しを有効にする"
-        />
-        <Text style={[styles.label, { opacity: !pauseLinked ? 1 : 0 }]}>
-          ゲームタイマーを止める時間:
-        </Text>
-        <View
-          style={[
-            styles.timeAdjustContainer,
-            { opacity: !pauseLinked ? 1 : 0 },
-          ]}
+      </ScrollView>
+      <View>
+        <Text
+          style={{
+            fontSize: 18,
+            marginTop: 10,
+            marginBottom: 5,
+            marginHorizontal: 20,
+            fontWeight: "bold",
+          }}
         >
-          <TouchableOpacity
-            onPress={() =>
-              setPauseTime(String(Math.max(0, parseInt(pauseTime, 10) - 600)))
-            }
-            style={styles.timeAdjustButton}
-          >
-            <Text>- 1分</Text>
-          </TouchableOpacity>
-          <Text style={styles.timeDisplay}>
-            {Math.floor(parseInt(pauseTime, 10) / 600)}分
-          </Text>
-          <TouchableOpacity
-            onPress={() =>
-              setPauseTime(
-                String(Math.min(gameTime, parseInt(pauseTime, 10) + 600))
-              )
-            }
-            style={styles.timeAdjustButton}
-          >
-            <Text>+ 1分</Text>
-          </TouchableOpacity>
-        </View>
+          {!pauseLinked
+            ? `ゲームタイマーは残り${
+                pauseTime / 600
+              }分まで流し、その後はショットタイマーと連動して止まります。流しの間はショットタイマーをタップしてもゲームタイマーが止まりません。`
+            : "ゲームタイマー及びショットタイマーをタップすると連動して止まります。"}
+        </Text>
       </View>
+
       <Button onPress={toTimerScreen} title="タイマー画面を開く" raised />
     </ThemeProvider>
   );
@@ -163,7 +180,6 @@ const styles = StyleSheet.create({
   label: {
     alignSelf: "flex-start",
     marginLeft: 20,
-    marginTop: 10,
     marginBottom: 5,
     fontSize: 18, // フォントサイズを少し大きく
     fontWeight: "bold", // フォントを太字に
@@ -203,5 +219,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 30, // 下の余白を追加
+  },
+  backButton: {
+    marginTop: 10, // 下の余白を追加
+    marginLeft: 20, // 左の余白を追加
+    width: 100, // 幅を指定
+  },
+  backButtonText: {
+    fontSize: 18, // フォントサイズを大きく
+    fontWeight: "bold", // フォントを太字に
   },
 });

@@ -8,14 +8,14 @@ export default function Page() {
   const router = useRouter();
   const toTimerScreen = () => {
     router.push({
-      pathname: "/timerScreen",
+      pathname: "/timer",
       params: {
-        gameTime: 4800,
-        shotTime: 300,
-        pauseTime: 0,
+        gameTime: 480000,
+        shotTime: 30000,
+        pauseTime: 60000,
         teamAName: "Blue",
         teamBName: "White",
-        pauseLinked: true,  
+        pauseLinked: true,
       },
     });
   };
@@ -27,30 +27,23 @@ export default function Page() {
   return (
     <View style={styles.container}>
       <Text h1 h1Style={styles.title}>
-        水球タイマーアプリ
+        水球タイマー
       </Text>
       <View style={styles.main}>
-          <Button
-            icon={<Icon name="ios-timer" size={24} color="white" />}
-            title="タイマー画面へ"
-            buttonStyle={styles.button}
-            onPress={toTimerScreen}
-            titleStyle={{ fontSize: 20 }}
-          />
-          <Button
-            icon={<Icon name="ios-settings" size={24} color="white" />}
-            title="設定画面へ"
-            buttonStyle={styles.button}
-            onPress={toSettingScreen}
-            titleStyle={{ fontSize: 20 }}
-          />
-          <Button
-            icon={<Icon name="ios-information-circle-outline" size={24} color="white" />}
-            title="テスト画面へ"
-            buttonStyle={styles.button}
-            onPress={() => router.push({ pathname: "/timer" })}
-            titleStyle={{ fontSize: 20 }} 
-          />
+        <Button
+          icon={<Icon name="ios-timer" size={30} color="white" />}
+          title="タイマー画面へ"
+          buttonStyle={styles.button}
+          onPress={toTimerScreen}
+          titleStyle={{ fontSize: 25 }}
+        />
+        <Button
+          icon={<Icon name="ios-settings" size={30} color="white" />}
+          title="設定画面へ"
+          buttonStyle={styles.button}
+          onPress={toSettingScreen}
+          titleStyle={{ fontSize: 25 }}
+        />
       </View>
     </View>
   );
@@ -83,10 +76,10 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   button: {
-    //backgroundColor: "black",
     borderRadius: 5,
     padding: 10,
     margin: 10,
     width: 300,
+    marginBottom: 20,
   },
 });

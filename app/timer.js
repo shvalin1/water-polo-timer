@@ -48,13 +48,13 @@ export default function Page() {
 
   useEffect(() => {
     if (params && params.gameTime && params.shotTime) {
-      setGameTime(params.gameTime * 100);
-      setShotTimerGameTime(params.shotTime * 100);
-      setTimerLinkedFrom(params.pauseTime * 100);
+      setGameTime(params.gameTime);
+      setShotTimerGameTime(params.shotTime);
+      setTimerLinkedFrom(params.pauseTime);
+      setIsTimerLinked(params.pauseLinked === "true");
       setTeamAName(params.teamAName);
       setTeamBName(params.teamBName);
     }
-    console.log(params);
   }, [params]);
 
   useEffect(() => {
@@ -68,8 +68,14 @@ export default function Page() {
   }, [ShotTimerIntervalId]); // ShotTimerIntervalId を依存配列に追加
 
   useEffect(() => {
-    if (gameTime - (lastLap + now - start) <= timerLinkedFrom) {
+    if (
+      !isTimerLinked &&
+      gameTime - (lastLap + now - start) <= timerLinkedFrom
+    ) {
       setIsTimerLinked(true);
+      if (isShotClockPaused) {
+        handleStop();
+      }
     }
     if (gameTime - (lastLap + now - start) <= 0) {
       doubleTimerStop();
@@ -318,10 +324,10 @@ export default function Page() {
             <Text style={styles.buttonText}>20</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => handleShotTimerReset(params.shotTime * 100)}
+            onPress={() => handleShotTimerReset(params.shotTime)}
             style={[styles.resetButton, { backgroundColor: "orange" }]}
           >
-            <Text style={styles.buttonText}>{params.shotTime / 10}</Text>
+            <Text style={styles.buttonText}>{params.shotTime / 1000}</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -344,7 +350,7 @@ export default function Page() {
         )}
       </TouchableOpacity>
       <TouchableOpacity onPress={toHomeScreen} style={styles.homeButton}>
-        <Icon name="ios-home" size={30} color="black" />
+        <Icon name="ios-home" size={30} color="white" />
       </TouchableOpacity>
       {!isStarted && (
         <View style={styles.startContainer}>
@@ -444,8 +450,8 @@ const styles = StyleSheet.create({
   },
   homeButton: {
     position: "absolute",
-    top: 0,
-    right: 0,
+    bottom: 0,
+    left: 0,
     margin: 15,
   },
   finishContainer: {
