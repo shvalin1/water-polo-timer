@@ -125,24 +125,22 @@ export default function SettingsPage() {
           >
             <TouchableOpacity
               onPress={() =>
-                setPauseTime(String(Math.max(0, parseInt(pauseTime, 10) - 600)))
+                setPauseTime(String(Math.max(0, parseInt(pauseTime, 10) - 300)))
               }
               style={styles.timeAdjustButton}
             >
-              <Text>- 1分</Text>
+              <Text>- 0.5分</Text>
             </TouchableOpacity>
-            <Text style={styles.timeDisplay}>
-              {Math.floor(parseInt(pauseTime, 10) / 600)}分
-            </Text>
+            <Text style={styles.timeDisplay}>{pauseTime / 600}分</Text>
             <TouchableOpacity
               onPress={() =>
                 setPauseTime(
-                  String(Math.min(gameTime, parseInt(pauseTime, 10) + 600))
+                  String(Math.min(gameTime, parseInt(pauseTime, 10) + 300))
                 )
               }
               style={styles.timeAdjustButton}
             >
-              <Text>+ 1分</Text>
+              <Text>+ 0.5分</Text>
             </TouchableOpacity>
           </View>
         </View>
