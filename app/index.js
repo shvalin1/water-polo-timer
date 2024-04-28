@@ -3,6 +3,11 @@ import { StyleSheet, View } from "react-native";
 import { Button, Text } from "react-native-elements";
 import Icon from "react-native-vector-icons/Ionicons";
 import { useRouter } from "expo-router";
+//import { initializeFirebase } from "../firebase";
+import { collection, addDoc } from "firebase/firestore";
+import { db } from "../firebaseConfig";
+
+//initializeFirebase();
 
 export default function Page() {
   const router = useRouter();
@@ -24,6 +29,19 @@ export default function Page() {
       pathname: "/settingScreen",
     });
   };
+
+  // テストデータをFirestoreに追加する関数
+  const addTestDataToFirestore = async () => {
+    try {
+      const docRef = await addDoc(collection(db, "test"), {
+        name: "test",
+        score: 100,
+      });
+      console.log("Document written with ID: ", docRef.id);
+    } catch (e) {
+      console.error("Error adding document: ", e);
+    }
+  };
   return (
     <View style={styles.container}>
       <Text h1 h1Style={styles.title}>
@@ -43,6 +61,11 @@ export default function Page() {
           buttonStyle={styles.button}
           onPress={toSettingScreen}
           titleStyle={{ fontSize: 25 }}
+        />
+        <Button
+          title="テストデータを追加"
+          buttonStyle={styles.button}
+          onPress={addTestDataToFirestore}
         />
       </View>
     </View>
