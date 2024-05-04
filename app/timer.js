@@ -29,12 +29,12 @@ export default function Page() {
   const [lastLap, setLastLap] = useState(0);
   const [gameTime, setGameTime] = useState(300000);
   const [isStarted, setIsStarted] = useState(false);
-  const [ShotTimerNow, setShotTimerNow] = useState(0);
-  const [ShotTimerStart, setShotTimerStart] = useState(0);
-  const [ShotTimerIntervalId, setShotTimerIntervalId] = useState();
-  const [ShotTimerLastLap, setShotTimerLastLap] = useState(0);
-  const [ShotTimerGameTime, setShotTimerGameTime] = useState(30000);
-  const [ShotTimerIsStarted, setShotTimerIsStarted] = useState(false);
+  const [shotTimerNow, setShotTimerNow] = useState(0);
+  const [shotTimerStart, setShotTimerStart] = useState(0);
+  const [shotTimerIntervalId, setShotTimerIntervalId] = useState();
+  const [shotTimerLastLap, setShotTimerLastLap] = useState(0);
+  const [shotTimerGameTime, setShotTimerGameTime] = useState(30000);
+  const [shotTimerIsStarted, setShotTimerIsStarted] = useState(false);
   const [isTimerLinked, setIsTimerLinked] = useState(false);
   const [teamAName, setTeamAName] = useState("Blue"); // チームAの名前
   const [teamBName, setTeamBName] = useState("White"); // チームBの名前
@@ -67,8 +67,8 @@ export default function Page() {
 
   useEffect(() => {
     // component will unmount
-    return () => clearInterval(ShotTimerIntervalId);
-  }, [ShotTimerIntervalId]); // ShotTimerIntervalId を依存配列に追加
+    return () => clearInterval(shotTimerIntervalId);
+  }, [shotTimerIntervalId]); // ShotTimerIntervalId を依存配列に追加
 
   useEffect(() => {
     if (
@@ -89,13 +89,13 @@ export default function Page() {
 
   useEffect(() => {
     if (
-      ShotTimerGameTime - (ShotTimerLastLap + ShotTimerNow - ShotTimerStart) <=
+      shotTimerGameTime - (shotTimerLastLap + shotTimerNow - shotTimerStart) <=
       0
     ) {
       isTimerLinked ? doubleTimerStop() : handleShotTimerStop();
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     }
-  }, [ShotTimerGameTime, ShotTimerLastLap, ShotTimerNow, ShotTimerStart]);
+  }, [shotTimerGameTime, shotTimerLastLap, shotTimerNow, shotTimerStart]);
 
   const handleStart = () => {
     const id = setInterval(() => {
@@ -108,7 +108,7 @@ export default function Page() {
   };
 
   const handleStop = () => {
-    firebaseFunctions.RemoteHandleStop(start, lastLap + now - start, timerId);
+    firebaseFunctions.RemoteHandleStop(lastLap + now - start, timerId);
     clearInterval(intervalId);
     setLastLap(lastLap + now - start);
     setStart(0);
@@ -149,19 +149,18 @@ export default function Page() {
 
   const handleShotTimerStop = () => {
     firebaseFunctions.RemoteHandleShotTimerStop(
-      ShotTimerStart,
-      ShotTimerLastLap + ShotTimerNow - ShotTimerStart,
+      shotTimerLastLap + shotTimerNow - shotTimerStart,
       timerId
     );
-    clearInterval(ShotTimerIntervalId);
-    setShotTimerLastLap(ShotTimerLastLap + ShotTimerNow - ShotTimerStart);
+    clearInterval(shotTimerIntervalId);
+    setShotTimerLastLap(shotTimerLastLap + shotTimerNow - shotTimerStart);
     setShotTimerStart(0);
     setShotTimerNow(0);
     setIsShotClockPaused(true);
   };
 
   const doubleTimerStart = () => {
-    firebaseFunctions.RemoteHandleStart(gameTime, ShotTimerGameTime, timerId);
+    firebaseFunctions.RemoteHandleStart(gameTime, shotTimerGameTime, timerId);
     handleResume();
     handleShotTimerResume();
     setIsGamePaused(false);
@@ -298,7 +297,7 @@ export default function Page() {
     const duration = moment.duration(interval);
     let seconds = duration.seconds();
     const centiseconds = Math.floor(duration.milliseconds() / 10);
-    if (seconds !== ShotTimerGameTime / 1000) {
+    if (seconds !== shotTimerGameTime / 1000) {
       if (centiseconds > 10) {
         seconds += 1;
       }
@@ -365,8 +364,8 @@ export default function Page() {
             ]}
           >
             {formatShotTime(
-              ShotTimerGameTime -
-                (ShotTimerLastLap + ShotTimerNow - ShotTimerStart)
+              shotTimerGameTime -
+                (shotTimerLastLap + shotTimerNow - shotTimerStart)
             )}
           </Animated.Text>
         )}

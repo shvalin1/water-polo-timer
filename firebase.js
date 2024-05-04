@@ -14,7 +14,7 @@ const RemoteHandleStart = async (gameTime, shotTimerGameTime, timerId) => {
       start,
       shotTimerStart: start,
       lastLap: 0,
-      ShotTimerLastLap: 0,
+      shotTimerLastLap: 0,
       isGamePaused: false, // ゲームが一時停止していない状態を示す
       isShotClockPaused: false, // ショットクロックが一時停止していない状態を示す
       gameTime, // ゲームの残り時間（ミリ秒）
@@ -28,11 +28,12 @@ const RemoteHandleStart = async (gameTime, shotTimerGameTime, timerId) => {
   }
 };
 
-const RemoteHandleStop = async (start, lastLap, timerId) => {
+const RemoteHandleStop = async (lastLap, timerId) => {
   try {
     const timerDocRef = doc(db, `timers/${timerId}`);
-    const IsGamePaused = true;
-    await updateDoc(timerDocRef, { start, lastLap, IsGamePaused });
+    const isGamePaused = true;
+    const start = 0;
+    await updateDoc(timerDocRef, { start, lastLap, isGamePaused });
   } catch (error) {
     console.error("RemoteHandleStopでエラーが発生しました:", error);
     throw error;
@@ -42,26 +43,23 @@ const RemoteHandleStop = async (start, lastLap, timerId) => {
 const RemoteHandleResume = async (start, timerId) => {
   try {
     const timerDocRef = doc(db, `timers/${timerId}`);
-    const IsGamePaused = false;
-    await updateDoc(timerDocRef, { start, IsGamePaused });
+    const isGamePaused = false;
+    await updateDoc(timerDocRef, { start, isGamePaused });
   } catch (error) {
     console.error("RemoteHandleResumeでエラーが発生しました:", error);
     throw error;
   }
 };
 
-const RemoteHandleShotTimerStop = async (
-  shotTimerStart,
-  ShotTimerLastLap,
-  timerId
-) => {
+const RemoteHandleShotTimerStop = async (shotTimerLastLap, timerId) => {
   try {
     const timerDocRef = doc(db, `timers/${timerId}`);
-    const IsShotClockPaused = true;
+    const isShotClockPaused = true;
+    const shotTimerStart = 0;
     await updateDoc(timerDocRef, {
       shotTimerStart,
-      ShotTimerLastLap,
-      IsShotClockPaused,
+      shotTimerLastLap,
+      isShotClockPaused,
     });
   } catch (error) {
     console.error("RemoteHandleShotTimerStopでエラーが発生しました:", error);
@@ -72,8 +70,8 @@ const RemoteHandleShotTimerStop = async (
 const RemoteHandleShotTimerResume = async (shotTimerStart, timerId) => {
   try {
     const timerDocRef = doc(db, `timers/${timerId}`);
-    const IsShotClockPaused = false;
-    await updateDoc(timerDocRef, { shotTimerStart, IsShotClockPaused });
+    const isShotClockPaused = false;
+    await updateDoc(timerDocRef, { shotTimerStart, isShotClockPaused });
   } catch (error) {
     console.error("RemoteHandleShotTimerResumeでエラーが発生しました:", error);
     throw error;
@@ -85,7 +83,7 @@ const RemoteHandleShotTimerReset = async (resetTime, timerId) => {
     const timerDocRef = doc(db, `timers/${timerId}`);
     await updateDoc(timerDocRef, {
       shotTimerGameTime: resetTime,
-      ShotTimerLastLap: 0,
+      shotTimerLastLap: 0,
     });
   } catch (error) {
     console.error("RemoteHandleShotTimerResetでエラーが発生しました:", error);
