@@ -32,6 +32,11 @@ export default function Page() {
       },
     });
   };
+  const toRemoteSetting = () => {
+    router.push({
+      pathname: "/remoteSetting",
+    });
+  };
 
   return (
     <View style={styles.container}>
@@ -58,6 +63,13 @@ export default function Page() {
           title="リモートタイマーへ"
           buttonStyle={styles.button}
           onPress={toRemoteTimerScreen}
+          titleStyle={{ fontSize: 25 }}
+        />
+        <Button
+          icon={<Icon name="ios-settings" size={30} color="white" />}
+          title="リモート設定へ"
+          buttonStyle={styles.button}
+          onPress={toRemoteSetting}
           titleStyle={{ fontSize: 25 }}
         />
       </View>

@@ -3,7 +3,7 @@ import { doc, updateDoc, setDoc } from "firebase/firestore";
 
 // ランダムなタイマーIDを生成する関数
 export const generateTimerId = () => {
-  return Math.random().toString(36).substring(2, 15);
+  return Math.random().toString(36).substring(2, 8);
 };
 
 const RemoteHandleStart = async (gameTime, shotTimerGameTime, timerId) => {

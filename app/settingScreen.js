@@ -10,6 +10,7 @@ import {
 import { Link, useRouter } from "expo-router";
 import { AntDesign } from "@expo/vector-icons";
 import "expo-router/entry";
+import { generateTimerId } from "../firebase";
 
 export default function SettingsPage() {
   const [gameTime, setGameTime] = useState("4800"); // ゲームタイムの初期値
@@ -18,6 +19,8 @@ export default function SettingsPage() {
   const [teamBName, setTeamBName] = useState("White"); // チームBの名前
   const [pauseLinked, setPauseLinked] = useState(true); // pauseの連動設定
   const [pauseTime, setPauseTime] = useState("600"); // pauseの連動設定
+  const [timerId, setTimerId] = useState(null); // タイマーID
+  const [isRemote, setIsRemote] = useState(false); // リモートかどうか
 
   const router = useRouter();
 
@@ -33,6 +36,17 @@ export default function SettingsPage() {
         pauseLinked,
       },
     });
+  };
+
+  const onRemoteChange = () => {
+    if (!isRemote) {
+      if (!timerId) {
+        setTimerId(generateTimerId());
+      }
+    } else {
+      setTimerId(null);
+    }
+    setIsRemote(!isRemote);
   };
 
   const theme = {
@@ -62,6 +76,18 @@ export default function SettingsPage() {
       </Link>
       <ScrollView>
         <View style={styles.container}>
+          <CheckBox
+            checked={isRemote}
+            onPress={onRemoteChange}
+            size={30}
+            title="リモートタイマーを有効にする"
+          />
+          {isRemote && (
+            <>
+              <Text style={styles.label}>リモートタイマーID:</Text>
+              <Text style={styles.timerId}>{timerId}</Text>
+            </>
+          )}
           <Text style={styles.label}>ゲームタイム:</Text>
           <View style={styles.timeAdjustContainer}>
             <TouchableOpacity
@@ -174,6 +200,11 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     padding: 20,
+  },
+  timerId: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 20,
   },
   label: {
     alignSelf: "flex-start",
