@@ -118,6 +118,13 @@ const RemoteTimer = () => {
     };
   }, [timerData.isShotClockPaused]);
 
+  //gametimeが0になったらタイマーを止める
+  useEffect(() => {
+    if (timerData.gameTime - (timerData.lastLap + now - timerData.start) <= 0) {
+      setTimerData((prev) => ({ ...prev, isGamePaused: true }));
+    }
+  }, [timerData.gameTime, timerData.lastLap, now, timerData.start]);
+
   const toHomeScreen = () => {
     router.push({
       pathname: "/",
