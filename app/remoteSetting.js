@@ -10,16 +10,34 @@ import {
 import { Link, useRouter } from "expo-router";
 import { AntDesign } from "@expo/vector-icons";
 import "expo-router/entry";
+import { checkTimerId } from "../firebase";
 
 export default function SettingsPage() {
   const [timerId, setTimerId] = useState(null); // タイマーID
   const router = useRouter();
 
-  const toRemoteTimerScreen = () => {
+  const toRemoteTimerScreen = async () => {
+    try {
+      if (!timerId) {
+        alert("タイマーIDを入力してください");
+        return;
+      }
+      const isValid = await checkTimerId(timerId.toLowerCase());
+      console.log("isvalid", isValid);
+      if (!isValid) {
+        alert("タイマーIDが正しくありません");
+        return;
+      }
+    } catch (error) {
+      alert("エラーが発生しました");
+      router.push({
+        pathname: "/",
+      });
+    }
     router.push({
       pathname: "/remoteTimer",
       params: {
-        timerId: "test",
+        timerId: timerId.toLowerCase(),
       },
     });
   };
@@ -52,7 +70,13 @@ export default function SettingsPage() {
       <ScrollView>
         <View style={styles.container}>
           <Text style={styles.label}>タイマーID:</Text>
-          <Input value={setTimerId} onChangeText={setTimerId} />
+          <Input
+            value={timerId}
+            onChangeText={(text) =>
+              setTimerId(text.replace(/[^a-zA-Z0-9]/g, "").substr(0, 6))
+            }
+            keyboardType="email-address"
+          />
           <Text
             style={{
               fontSize: 18,
@@ -89,36 +113,6 @@ const styles = StyleSheet.create({
     marginBottom: 5,
     fontSize: 18, // フォントサイズを少し大きく
     fontWeight: "bold", // フォントを太字に
-  },
-  timeAdjustButton: {
-    backgroundColor: "white", // 背景色を白に
-    padding: 10,
-    margin: 10,
-    borderRadius: 10, // 角を丸くする
-    shadowColor: "#000", // 影の色
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
-  timeDisplay: {
-    fontSize: 24, // タイマー表示のフォントサイズを大きく
-    marginHorizontal: 20, // 横の余白を追加
-    fontWeight: "bold", // フォントを太字に
-  },
-  pausedTimeDisplay: {
-    fontSize: 24, // タイマー表示のフォントサイズを大きく
-    marginHorizontal: 20, // 横の余白を追加
-    fontWeight: "bold", // フォントを太字に
-    color: "red", // 赤色に
-  },
-  timeAdjustContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 30, // 下の余白を追加
   },
   buttonContainer: {
     flexDirection: "row",

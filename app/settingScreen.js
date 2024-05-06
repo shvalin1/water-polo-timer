@@ -34,6 +34,8 @@ export default function SettingsPage() {
         teamAName,
         teamBName,
         pauseLinked,
+        isRemote,
+        timerId,
       },
     });
   };

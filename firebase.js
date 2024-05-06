@@ -1,9 +1,34 @@
 import { db } from "./firebaseConfig";
-import { doc, updateDoc, setDoc } from "firebase/firestore";
+import { doc, updateDoc, setDoc, getDoc } from "firebase/firestore";
 
 // ランダムなタイマーIDを生成する関数
 export const generateTimerId = () => {
   return Math.random().toString(36).substring(2, 8);
+};
+
+export const checkTimerId = async (timerId) => {
+  try {
+    const timerDocRef = doc(db, "timers", timerId);
+    const docSnap = await getDoc(timerDocRef);
+    if (docSnap.exists()) {
+      return docSnap.data().isDeleted;
+    } else {
+      return false;
+    }
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const deleteTimer = async (timerId) => {
+  try {
+    const timerDocRef = doc(db, "timers", timerId);
+    await updateDoc(timerDocRef, {
+      isDeleted: true,
+    });
+  } catch (error) {
+    throw error;
+  }
 };
 
 const RemoteHandleStart = async (gameTime, shotTimerGameTime, timerId) => {

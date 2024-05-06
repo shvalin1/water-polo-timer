@@ -6,6 +6,8 @@ import {
   Dimensions,
   Animated,
   TouchableOpacity,
+  Alert,
+  BackHandler,
 } from "react-native";
 import { useRouter } from "expo-router";
 import moment from "moment";
@@ -21,7 +23,7 @@ const statusBarHeight = Platform.OS == "ios" ? Constants.statusBarHeight : 0;
 //ステータスバーの高さを引いた高さを取得する
 const standardHeight = (height - statusBarHeight - 300) / 2;
 
-const RemoteTimer = ({ timerId }) => {
+const RemoteTimer = () => {
   const params = useLocalSearchParams();
   const router = useRouter();
   const [timerData, setTimerData] = useState({
@@ -53,12 +55,22 @@ const RemoteTimer = ({ timerId }) => {
         console.log("Timer data updated:", data);
       }
     });
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      () => {
+        router.push({
+          pathname: "/",
+        });
+        return true;
+      }
+    );
 
     return () => {
+      backHandler.remove();
       unsubscribe();
       console.log("Unsubscribed from timer data");
     };
-  }, [timerId]);
+  }, []);
 
   //isGamePausedがtrueからfalseになったらsetIntervalを使ってタイマーを動かす
   useLayoutEffect(() => {

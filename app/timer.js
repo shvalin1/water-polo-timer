@@ -13,7 +13,7 @@ import Constants from "expo-constants";
 import Icon from "react-native-vector-icons/Ionicons";
 import * as Haptics from "expo-haptics";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { firebaseFunctions } from "../firebase";
+import { firebaseFunctions, deleteTimer } from "../firebase";
 
 const { width, height } = Dimensions.get("window");
 //ステータスバーの高さを取得する
@@ -44,7 +44,6 @@ export default function Page() {
   const [timerLinkedFrom, setTimerLinkedFrom] = useState(60000); // タイマー連動元
   const [shotTimerBlackout, setShotTimerBlackout] = useState(false); // ショットクロックのブラックアウト状態
   const [isFinished, setIsFinished] = useState(false); // ゲーム終了状態
-  const [timerId, setTimerId] = useState("test"); // タイマーID
 
   const router = useRouter();
 
@@ -56,7 +55,6 @@ export default function Page() {
       setIsTimerLinked(params.pauseLinked === "true");
       setTeamAName(params.teamAName);
       setTeamBName(params.teamBName);
-      setTimerId(params.timerId || "test");
     }
   }, [params]);
 
@@ -97,6 +95,14 @@ export default function Page() {
     }
   }, [shotTimerGameTime, shotTimerLastLap, shotTimerNow, shotTimerStart]);
 
+  useEffect(() => {
+    return () => {
+      if (params.isRemote) {
+        deleteTimer(params.timerId);
+      }
+    };
+  }, []);
+
   const handleStart = () => {
     const id = setInterval(() => {
       setNow(new Date().getTime());
@@ -108,7 +114,7 @@ export default function Page() {
   };
 
   const handleStop = () => {
-    firebaseFunctions.RemoteHandleStop(lastLap + now - start, timerId);
+    firebaseFunctions.RemoteHandleStop(lastLap + now - start, params.timerId);
     clearInterval(intervalId);
     setLastLap(lastLap + now - start);
     setStart(0);
@@ -118,7 +124,7 @@ export default function Page() {
 
   const handleResume = () => {
     const newDate = new Date().getTime();
-    firebaseFunctions.RemoteHandleResume(newDate, timerId);
+    firebaseFunctions.RemoteHandleResume(newDate, params.timerId);
     setStart(newDate);
     setNow(newDate);
     const id = setInterval(() => {
@@ -150,7 +156,7 @@ export default function Page() {
   const handleShotTimerStop = () => {
     firebaseFunctions.RemoteHandleShotTimerStop(
       shotTimerLastLap + shotTimerNow - shotTimerStart,
-      timerId
+      params.timerId
     );
     clearInterval(shotTimerIntervalId);
     setShotTimerLastLap(shotTimerLastLap + shotTimerNow - shotTimerStart);
@@ -160,7 +166,11 @@ export default function Page() {
   };
 
   const doubleTimerStart = () => {
-    firebaseFunctions.RemoteHandleStart(gameTime, shotTimerGameTime, timerId);
+    firebaseFunctions.RemoteHandleStart(
+      gameTime,
+      shotTimerGameTime,
+      params.timerId
+    );
     handleResume();
     handleShotTimerResume();
     setIsGamePaused(false);
@@ -180,7 +190,7 @@ export default function Page() {
 
   const handleShotTimerResume = () => {
     const newDate = new Date().getTime();
-    firebaseFunctions.RemoteHandleShotTimerResume(newDate, timerId);
+    firebaseFunctions.RemoteHandleShotTimerResume(newDate, params.timerId);
     setShotTimerStart(newDate);
     setShotTimerNow(newDate);
     const id = setInterval(() => {
@@ -191,7 +201,7 @@ export default function Page() {
   };
 
   const handleShotTimerReset = (resetTime) => {
-    firebaseFunctions.RemoteHandleShotTimerReset(resetTime, timerId);
+    firebaseFunctions.RemoteHandleShotTimerReset(resetTime, params.timerId);
     setShotTimerLastLap(0);
     if (gameTime - (lastLap + now - start) <= resetTime) {
       setShotTimerBlackout(true);
@@ -204,7 +214,7 @@ export default function Page() {
 
   const incrementScore = (team) => {
     const score = teamScores[team];
-    firebaseFunctions.RemoteScoreChange(team, score + 1, timerId);
+    firebaseFunctions.RemoteScoreChange(team, score + 1, params.timerId);
     setTeamScores((prevScores) => ({
       ...prevScores,
       [team]: score + 1,
@@ -218,7 +228,7 @@ export default function Page() {
     if (score === 0) {
       return;
     }
-    firebaseFunctions.RemoteScoreChange(team, score - 1, timerId);
+    firebaseFunctions.RemoteScoreChange(team, score - 1, params.timerId);
     setTeamScores((prevScores) => ({
       ...prevScores,
       [team]: prevScores[team] - 1,

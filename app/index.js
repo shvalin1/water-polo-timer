@@ -16,6 +16,7 @@ export default function Page() {
         teamAName: "Blue",
         teamBName: "White",
         pauseLinked: true,
+        isRemote: false,
       },
     });
   };
