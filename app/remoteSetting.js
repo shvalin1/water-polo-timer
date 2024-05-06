@@ -23,7 +23,6 @@ export default function SettingsPage() {
         return;
       }
       const isValid = await checkTimerId(timerId.toLowerCase());
-      console.log("isvalid", isValid);
       if (!isValid) {
         alert("タイマーIDが正しくありません");
         return;

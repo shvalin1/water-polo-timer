@@ -52,7 +52,6 @@ const RemoteTimer = () => {
       const data = doc.data();
       if (data) {
         setTimerData(data);
-        console.log("Timer data updated:", data);
       }
     });
     const backHandler = BackHandler.addEventListener(
@@ -68,7 +67,6 @@ const RemoteTimer = () => {
     return () => {
       backHandler.remove();
       unsubscribe();
-      console.log("Unsubscribed from timer data");
     };
   }, []);
 
