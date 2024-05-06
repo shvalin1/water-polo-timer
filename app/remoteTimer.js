@@ -38,15 +38,8 @@ const RemoteTimer = () => {
     teamA: 0,
     teamB: 0,
   });
-  const [isStarted, setIsStarted] = useState(false);
-  const [intervalId, setIntervalId] = useState(null);
-  const [shotTimerIntervalId, setShotTimerIntervalId] = useState(null);
   const [now, setNow] = useState(0);
   const [ShotTimerNow, setShotTimerNow] = useState(0);
-  const [isFinished, setIsFinished] = useState(false);
-  const [shotTimerBlackout, setShotTimerBlackout] = useState(false);
-  const teamAName = "Team A";
-  const teamBName = "Team B";
   useEffect(() => {
     const unsubscribe = onSnapshot(doc(db, "timers", params.timerId), (doc) => {
       const data = doc.data();
@@ -229,7 +222,7 @@ const RemoteTimer = () => {
         </View>
       </View>
       <TouchableOpacity style={styles.timerArea}>
-        {!shotTimerBlackout && (
+        {!timerData.shotTimerBlackout && (
           <Animated.Text
             style={[
               styles.timer,

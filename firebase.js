@@ -45,6 +45,7 @@ export const createTimer = async (params) => {
       isShotClockPaused: true, // ショットクロックが一時停止していない状態を示す
       gameTime: params.gameTime, // ゲームの残り時間（ミリ秒）
       shotTimerGameTime: params.shotTime, // ショットクロックの残り時間（ミリ秒）
+      shotTimerBlackout: false, // ショットクロックがブラックアウトしているかどうか
       teamA: 0, // チームAの得点
       teamB: 0, // チームBの得点
       teamAName: params.teamAName,
@@ -106,12 +107,17 @@ const RemoteHandleShotTimerResume = async (shotTimerStart, timerId) => {
   }
 };
 
-const RemoteHandleShotTimerReset = async (resetTime, timerId) => {
+const RemoteHandleShotTimerReset = async (
+  resetTime,
+  shotTimerBlackout,
+  timerId
+) => {
   try {
     const timerDocRef = doc(db, `timers/${timerId}`);
     await updateDoc(timerDocRef, {
       shotTimerGameTime: resetTime,
       shotTimerLastLap: 0,
+      shotTimerBlackout,
     });
   } catch (error) {
     console.error("RemoteHandleShotTimerResetでエラーが発生しました:", error);

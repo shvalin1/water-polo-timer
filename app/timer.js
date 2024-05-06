@@ -214,13 +214,21 @@ export default function Page() {
   };
 
   const handleShotTimerReset = (resetTime) => {
-    if (isRemote) {
-      firebaseFunctions.RemoteHandleShotTimerReset(resetTime, params.timerId);
-    }
-    setShotTimerLastLap(0);
+    let isBlackout = false;
     if (gameTime - (lastLap + now - start) <= resetTime) {
-      setShotTimerBlackout(true);
+      isBlackout = true;
+    } else {
+      isBlackout = false;
     }
+    if (isRemote) {
+      firebaseFunctions.RemoteHandleShotTimerReset(
+        resetTime,
+        isBlackout,
+        params.timerId
+      );
+    }
+    setShotTimerBlackout(isBlackout);
+    setShotTimerLastLap(0);
     setShotTimerGameTime(resetTime);
     if (!isShotClockPaused) {
       handleShotTimerResume();
