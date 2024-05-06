@@ -22,10 +22,12 @@ export const checkTimerId = async (timerId) => {
 
 export const deleteTimer = async (timerId) => {
   try {
-    const timerDocRef = doc(db, "timers", timerId);
-    await updateDoc(timerDocRef, {
-      isDeleted: true,
-    });
+    if (timerId) {
+      const timerDocRef = doc(db, "timers", timerId);
+      await updateDoc(timerDocRef, {
+        isDeleted: true,
+      });
+    }
   } catch (error) {
     throw error;
   }

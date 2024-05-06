@@ -44,6 +44,7 @@ export default function Page() {
   const [timerLinkedFrom, setTimerLinkedFrom] = useState(60000); // タイマー連動元
   const [shotTimerBlackout, setShotTimerBlackout] = useState(false); // ショットクロックのブラックアウト状態
   const [isFinished, setIsFinished] = useState(false); // ゲーム終了状態
+  const [isRemote, setIsRemote] = useState(false); // リモートかどうか
 
   const router = useRouter();
 
@@ -55,6 +56,7 @@ export default function Page() {
       setIsTimerLinked(params.pauseLinked === "true");
       setTeamAName(params.teamAName);
       setTeamBName(params.teamBName);
+      setIsRemote(params.isRemote === "true");
     }
   }, [params]);
 
@@ -97,7 +99,15 @@ export default function Page() {
 
   useEffect(() => {
     return () => {
-      if (params.isRemote) {
+      if (isRemote) {
+        firebaseFunctions.RemoteHandleStop(
+          lastLap + now - start,
+          params.timerId
+        );
+        firebaseFunctions.RemoteHandleShotTimerStop(
+          shotTimerLastLap + shotTimerNow - shotTimerStart,
+          params.timerId
+        );
         deleteTimer(params.timerId);
       }
     };
@@ -114,7 +124,9 @@ export default function Page() {
   };
 
   const handleStop = () => {
-    firebaseFunctions.RemoteHandleStop(lastLap + now - start, params.timerId);
+    if (isRemote) {
+      firebaseFunctions.RemoteHandleStop(lastLap + now - start, params.timerId);
+    }
     clearInterval(intervalId);
     setLastLap(lastLap + now - start);
     setStart(0);
@@ -124,7 +136,9 @@ export default function Page() {
 
   const handleResume = () => {
     const newDate = new Date().getTime();
-    firebaseFunctions.RemoteHandleResume(newDate, params.timerId);
+    if (isRemote) {
+      firebaseFunctions.RemoteHandleResume(newDate, params.timerId);
+    }
     setStart(newDate);
     setNow(newDate);
     const id = setInterval(() => {
@@ -154,10 +168,12 @@ export default function Page() {
   };
 
   const handleShotTimerStop = () => {
-    firebaseFunctions.RemoteHandleShotTimerStop(
-      shotTimerLastLap + shotTimerNow - shotTimerStart,
-      params.timerId
-    );
+    if (isRemote) {
+      firebaseFunctions.RemoteHandleShotTimerStop(
+        shotTimerLastLap + shotTimerNow - shotTimerStart,
+        params.timerId
+      );
+    }
     clearInterval(shotTimerIntervalId);
     setShotTimerLastLap(shotTimerLastLap + shotTimerNow - shotTimerStart);
     setShotTimerStart(0);
@@ -185,7 +201,9 @@ export default function Page() {
 
   const handleShotTimerResume = () => {
     const newDate = new Date().getTime();
-    firebaseFunctions.RemoteHandleShotTimerResume(newDate, params.timerId);
+    if (isRemote) {
+      firebaseFunctions.RemoteHandleShotTimerResume(newDate, params.timerId);
+    }
     setShotTimerStart(newDate);
     setShotTimerNow(newDate);
     const id = setInterval(() => {
@@ -196,7 +214,9 @@ export default function Page() {
   };
 
   const handleShotTimerReset = (resetTime) => {
-    firebaseFunctions.RemoteHandleShotTimerReset(resetTime, params.timerId);
+    if (isRemote) {
+      firebaseFunctions.RemoteHandleShotTimerReset(resetTime, params.timerId);
+    }
     setShotTimerLastLap(0);
     if (gameTime - (lastLap + now - start) <= resetTime) {
       setShotTimerBlackout(true);
@@ -209,7 +229,9 @@ export default function Page() {
 
   const incrementScore = (team) => {
     const score = teamScores[team];
-    firebaseFunctions.RemoteScoreChange(team, score + 1, params.timerId);
+    if (isRemote) {
+      firebaseFunctions.RemoteScoreChange(team, score + 1, params.timerId);
+    }
     setTeamScores((prevScores) => ({
       ...prevScores,
       [team]: score + 1,
@@ -223,7 +245,9 @@ export default function Page() {
     if (score === 0) {
       return;
     }
-    firebaseFunctions.RemoteScoreChange(team, score - 1, params.timerId);
+    if (isRemote) {
+      firebaseFunctions.RemoteScoreChange(team, score - 1, params.timerId);
+    }
     setTeamScores((prevScores) => ({
       ...prevScores,
       [team]: prevScores[team] - 1,

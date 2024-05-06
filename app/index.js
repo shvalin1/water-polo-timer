@@ -25,14 +25,6 @@ export default function Page() {
       pathname: "/settingScreen",
     });
   };
-  const toRemoteTimerScreen = () => {
-    router.push({
-      pathname: "/remoteTimer",
-      params: {
-        timerId: "test",
-      },
-    });
-  };
   const toRemoteSetting = () => {
     router.push({
       pathname: "/remoteSetting",
@@ -57,13 +49,6 @@ export default function Page() {
           title="設定画面へ"
           buttonStyle={styles.button}
           onPress={toSettingScreen}
-          titleStyle={{ fontSize: 25 }}
-        />
-        <Button
-          icon={<Icon name="ios-information-circle" size={30} color="white" />}
-          title="リモートタイマーへ"
-          buttonStyle={styles.button}
-          onPress={toRemoteTimerScreen}
           titleStyle={{ fontSize: 25 }}
         />
         <Button

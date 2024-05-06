@@ -207,12 +207,12 @@ const RemoteTimer = () => {
       <View style={styles.centerWrapper}>
         <TouchableOpacity>
           <Text style={styles.score}>
-            {teamAName}: {timerData.teamA}
+            {timerData.teamAName}: {timerData.teamA}
           </Text>
         </TouchableOpacity>
         <TouchableOpacity>
           <Text style={styles.score}>
-            {teamBName}: {timerData.teamB}
+            {timerData.teamBName}: {timerData.teamB}
           </Text>
         </TouchableOpacity>
         <View style={styles.buttonContainer}>
