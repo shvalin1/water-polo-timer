@@ -40,6 +40,8 @@ const RemoteTimer = () => {
   });
   const [now, setNow] = useState(0);
   const [ShotTimerNow, setShotTimerNow] = useState(0);
+  const [screen, setScreen] = useState("normal");
+
   useEffect(() => {
     const unsubscribe = onSnapshot(doc(db, "timers", params.timerId), (doc) => {
       const data = doc.data();
@@ -188,154 +190,177 @@ const RemoteTimer = () => {
     }
   }, [timerData.isGamePaused, timerData.isShotClockPaused, blinkingOpacity]);
 
-  return (
-    <View style={styles.container}>
-      <TouchableOpacity style={styles.timerArea}>
-        <Animated.Text
-          style={[
-            styles.timer,
-            { opacity: timerData.isGamePaused ? blinkingOpacity : 1 },
-          ]}
-        >
-          {formatGameTime(
-            timerData.gameTime - (timerData.lastLap + now - timerData.start)
-          )}
-        </Animated.Text>
-      </TouchableOpacity>
-      <View style={styles.centerWrapper}>
-        <TouchableOpacity>
-          <Text style={styles.score}>
-            {timerData.teamAName}: {timerData.teamA}
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity>
-          <Text style={styles.score}>
-            {timerData.teamBName}: {timerData.teamB}
-          </Text>
-        </TouchableOpacity>
-      </View>
-      <TouchableOpacity style={styles.timerArea}>
-        {!timerData.shotTimerBlackout && (
-          <Animated.Text
-            style={[
-              styles.timer,
-              { opacity: timerData.isShotClockPaused ? blinkingOpacity : 1 },
-            ]}
-          >
-            {formatShotTime(
-              timerData.shotTimerGameTime -
-                (timerData.shotTimerLastLap +
-                  ShotTimerNow -
-                  timerData.shotTimerStart)
-            )}
-          </Animated.Text>
+  const onPress = () => {
+    setScreen((prevScreen) => {
+      switch (prevScreen) {
+        case "normal":
+          return "shotClock";
+        case "shotClock":
+          return "gameClock";
+        case "gameClock":
+          return "normal";
+        default:
+          return "normal";
+      }
+    });
+
+    return (
+      <TouchableOpacity onPress={onPress} style={styles.container}>
+        {true && (
+          <>
+            <TouchableOpacity style={styles.timerArea}>
+              <Animated.Text
+                style={[
+                  styles.timer,
+                  { opacity: timerData.isGamePaused ? blinkingOpacity : 1 },
+                ]}
+              >
+                {formatGameTime(
+                  timerData.gameTime -
+                    (timerData.lastLap + now - timerData.start)
+                )}
+              </Animated.Text>
+            </TouchableOpacity>
+            <View style={styles.centerWrapper}>
+              <TouchableOpacity>
+                <Text style={styles.score}>
+                  {timerData.teamAName}: {timerData.teamA}
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity>
+                <Text style={styles.score}>
+                  {timerData.teamBName}: {timerData.teamB}
+                </Text>
+              </TouchableOpacity>
+            </View>
+            <TouchableOpacity style={styles.timerArea}>
+              {!timerData.shotTimerBlackout && (
+                <Animated.Text
+                  style={[
+                    styles.timer,
+                    {
+                      opacity: timerData.isShotClockPaused
+                        ? blinkingOpacity
+                        : 1,
+                    },
+                  ]}
+                >
+                  {formatShotTime(
+                    timerData.shotTimerGameTime -
+                      (timerData.shotTimerLastLap +
+                        ShotTimerNow -
+                        timerData.shotTimerStart)
+                  )}
+                </Animated.Text>
+              )}
+            </TouchableOpacity>
+          </>
         )}
+        <TouchableOpacity onPress={toHomeScreen} style={styles.homeButton}>
+          <Icon name="ios-home" size={30} color="white" />
+        </TouchableOpacity>
       </TouchableOpacity>
-      <TouchableOpacity onPress={toHomeScreen} style={styles.homeButton}>
-        <Icon name="ios-home" size={30} color="white" />
-      </TouchableOpacity>
-    </View>
-  );
+    );
+  };
+
+  const styles = StyleSheet.create({
+    startContainer: {
+      position: "absolute",
+      backgroundColor: "rgba(0,0,0,0.5)",
+      width: width,
+      height: height,
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    startButton: {
+      width: 300,
+      height: 300,
+      borderRadius: 150,
+      justifyContent: "center",
+      alignItems: "center",
+      backgroundColor: "rgba(200,0,0,0.9)",
+    },
+    container: {
+      flex: 1,
+      justifyContent: "",
+      alignItems: "stretch",
+      backgroundColor: "black",
+    },
+    centerWrapper: {
+      justifyContent: "center",
+      alignItems: "center",
+      backgroundColor: "rgba(200,200,200,0.3)",
+      height: 300,
+    },
+    timer: {
+      fontSize: 130,
+      margin: 10,
+      color: "white",
+    },
+    score: {
+      fontSize: 50,
+      margin: 0,
+      color: "white",
+    },
+    resetButton: {
+      height: 130,
+      width: 130,
+      borderRadius: 65,
+      justifyContent: "center",
+      alignItems: "center",
+      shadowColor: "black",
+      shadowRadius: 10,
+      shadowOpacity: 0.5,
+      shadowOffset: { width: 0, height: 0 },
+      elevation: 15,
+    },
+    buttonContainer: {
+      flexDirection: "row",
+      justifyContent: "space-around",
+      alignItems: "center",
+      width: width,
+    },
+    timerArea: {
+      justifyContent: "center",
+      alignItems: "center",
+      height: standardHeight,
+      width: width,
+      //backgroundColor: "rgba(200,200,200,0.)",
+    },
+    buttonText: {
+      fontSize: 60,
+      color: "white",
+    },
+    startText: {
+      fontSize: 100,
+      color: "white",
+    },
+    homeButton: {
+      position: "absolute",
+      bottom: 0,
+      left: 0,
+      margin: 15,
+    },
+    finishContainer: {
+      position: "absolute",
+      backgroundColor: "rgba(0,0,0,0.5)",
+      width: width,
+      height: height,
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    finishButton: {
+      width: 300,
+      height: 300,
+      borderRadius: 150,
+      justifyContent: "center",
+      alignItems: "center",
+      backgroundColor: "rgba(0,200,0,0.9)",
+    },
+    finishText: {
+      fontSize: 75,
+      color: "white",
+    },
+  });
 };
-
-const styles = StyleSheet.create({
-  startContainer: {
-    position: "absolute",
-    backgroundColor: "rgba(0,0,0,0.5)",
-    width: width,
-    height: height,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  startButton: {
-    width: 300,
-    height: 300,
-    borderRadius: 150,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(200,0,0,0.9)",
-  },
-  container: {
-    flex: 1,
-    justifyContent: "",
-    alignItems: "stretch",
-    backgroundColor: "black",
-  },
-  centerWrapper: {
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(200,200,200,0.3)",
-    height: 300,
-  },
-  timer: {
-    fontSize: 130,
-    margin: 10,
-    color: "white",
-  },
-  score: {
-    fontSize: 50,
-    margin: 0,
-    color: "white",
-  },
-  resetButton: {
-    height: 130,
-    width: 130,
-    borderRadius: 65,
-    justifyContent: "center",
-    alignItems: "center",
-    shadowColor: "black",
-    shadowRadius: 10,
-    shadowOpacity: 0.5,
-    shadowOffset: { width: 0, height: 0 },
-    elevation: 15,
-  },
-  buttonContainer: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    alignItems: "center",
-    width: width,
-  },
-  timerArea: {
-    justifyContent: "center",
-    alignItems: "center",
-    height: standardHeight,
-    width: width,
-    //backgroundColor: "rgba(200,200,200,0.)",
-  },
-  buttonText: {
-    fontSize: 60,
-    color: "white",
-  },
-  startText: {
-    fontSize: 100,
-    color: "white",
-  },
-  homeButton: {
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    margin: 15,
-  },
-  finishContainer: {
-    position: "absolute",
-    backgroundColor: "rgba(0,0,0,0.5)",
-    width: width,
-    height: height,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  finishButton: {
-    width: 300,
-    height: 300,
-    borderRadius: 150,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0,200,0,0.9)",
-  },
-  finishText: {
-    fontSize: 75,
-    color: "white",
-  },
-});
-
 export default RemoteTimer;
