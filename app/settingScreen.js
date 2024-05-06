@@ -10,7 +10,7 @@ import {
 import { Link, useRouter } from "expo-router";
 import { AntDesign } from "@expo/vector-icons";
 import "expo-router/entry";
-import { generateTimerId } from "../firebase";
+import { generateTimerId, createTimer } from "../firebase";
 
 export default function SettingsPage() {
   const [gameTime, setGameTime] = useState("4800"); // ゲームタイムの初期値
@@ -24,19 +24,23 @@ export default function SettingsPage() {
 
   const router = useRouter();
 
-  const toTimerScreen = () => {
+  const toTimerScreen = async () => {
+    const params = {
+      gameTime: parseInt(gameTime * 100),
+      shotTime: parseInt(shotTime * 100),
+      pauseTime: parseInt(pauseTime * 100),
+      teamAName,
+      teamBName,
+      pauseLinked,
+      isRemote,
+      timerId,
+    };
+    if (timerId) {
+      await createTimer(params);
+    }
     router.push({
       pathname: "/timer",
-      params: {
-        gameTime: parseInt(gameTime * 100),
-        shotTime: parseInt(shotTime * 100),
-        pauseTime: parseInt(pauseTime * 100),
-        teamAName,
-        teamBName,
-        pauseLinked,
-        isRemote,
-        timerId,
-      },
+      params,
     });
   };
 

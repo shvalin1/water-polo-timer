@@ -11,7 +11,7 @@ export const checkTimerId = async (timerId) => {
     const timerDocRef = doc(db, "timers", timerId);
     const docSnap = await getDoc(timerDocRef);
     if (docSnap.exists()) {
-      return docSnap.data().isDeleted;
+      return !docSnap.data().isDeleted;
     } else {
       return false;
     }
@@ -31,21 +31,22 @@ export const deleteTimer = async (timerId) => {
   }
 };
 
-const RemoteHandleStart = async (gameTime, shotTimerGameTime, timerId) => {
+export const createTimer = async (params) => {
   try {
-    const timerDocRef = doc(db, `timers/${timerId}`);
-    const start = Date.now();
+    const timerDocRef = doc(db, `timers/${params.timerId}`);
     await setDoc(timerDocRef, {
-      start,
-      shotTimerStart: start,
+      start: 0,
+      shotTimerStart: 0,
       lastLap: 0,
       shotTimerLastLap: 0,
-      isGamePaused: false, // ゲームが一時停止していない状態を示す
-      isShotClockPaused: false, // ショットクロックが一時停止していない状態を示す
-      gameTime, // ゲームの残り時間（ミリ秒）
-      shotTimerGameTime, // ショットクロックの残り時間（ミリ秒）
+      isGamePaused: true, // ゲームが一時停止していない状態を示す
+      isShotClockPaused: true, // ショットクロックが一時停止していない状態を示す
+      gameTime: params.gameTime, // ゲームの残り時間（ミリ秒）
+      shotTimerGameTime: params.shotTime, // ショットクロックの残り時間（ミリ秒）
       teamA: 0, // チームAの得点
       teamB: 0, // チームBの得点
+      teamAName: params.teamAName,
+      teamBName: params.teamBName,
     });
   } catch (error) {
     console.error("RemoteHandleStartでエラーが発生しました:", error);
@@ -129,7 +130,6 @@ const RemoteScoreChange = async (team, score, timerId) => {
 };
 
 export const firebaseFunctions = {
-  RemoteHandleStart,
   RemoteHandleStop,
   RemoteHandleResume,
   RemoteHandleShotTimerStop,

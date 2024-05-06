@@ -166,11 +166,6 @@ export default function Page() {
   };
 
   const doubleTimerStart = () => {
-    firebaseFunctions.RemoteHandleStart(
-      gameTime,
-      shotTimerGameTime,
-      params.timerId
-    );
     handleResume();
     handleShotTimerResume();
     setIsGamePaused(false);
