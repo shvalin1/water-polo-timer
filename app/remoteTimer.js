@@ -213,20 +213,6 @@ const RemoteTimer = () => {
             {timerData.teamBName}: {timerData.teamB}
           </Text>
         </TouchableOpacity>
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity
-            style={[styles.resetButton, { backgroundColor: "red" }]}
-          >
-            <Text style={styles.buttonText}>20</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.resetButton, { backgroundColor: "orange" }]}
-          >
-            <Text style={styles.buttonText}>
-              {timerData.shotTimerGameTime / 1000}
-            </Text>
-          </TouchableOpacity>
-        </View>
       </View>
       <TouchableOpacity style={styles.timerArea}>
         {!timerData.shotTimerBlackout && (
