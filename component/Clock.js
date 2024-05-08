@@ -22,12 +22,14 @@ export const NormalTimer = ({
   now,
   ShotTimerNow,
   blinkingOpacity,
+  params,
 }) => (
   <>
-    <TouchableOpacity style={styles.timerArea}>
+    <TouchableOpacity style={styles.normalTimerArea}>
       <Animated.Text
         style={[
           styles.timer,
+          { fontSize: params.GameTimerTextSize },
           { opacity: timerData.isGamePaused ? blinkingOpacity : 1 },
         ]}
       >
@@ -46,11 +48,12 @@ export const NormalTimer = ({
         </Text>
       </TouchableOpacity>
     </View>
-    <TouchableOpacity style={styles.timerArea}>
+    <TouchableOpacity style={styles.normalTimerArea}>
       {!timerData.shotTimerBlackout && (
         <Animated.Text
           style={[
             styles.timer,
+            { fontSize: params.ShotTimerTextSize },
             {
               opacity: timerData.isShotClockPaused ? blinkingOpacity : 1,
             },
@@ -65,9 +68,9 @@ export const NormalTimer = ({
 
 export const ShotClock = ({
   timerData,
-  now,
   ShotTimerNow,
   blinkingOpacity,
+  params,
 }) => (
   <>
     <View style={styles.centerWrapper}>
@@ -87,6 +90,7 @@ export const ShotClock = ({
         <Animated.Text
           style={[
             styles.timer,
+            { fontSize: params.ShotTimerTextSize },
             {
               opacity: timerData.isShotClockPaused ? blinkingOpacity : 1,
             },
@@ -99,12 +103,13 @@ export const ShotClock = ({
   </>
 );
 
-export const GameClock = ({ timerData, now, blinkingOpacity }) => (
+export const GameClock = ({ timerData, now, blinkingOpacity, params }) => (
   <View style={styles.container}>
     <TouchableOpacity style={styles.timerArea}>
       <Animated.Text
         style={[
           styles.timer,
+          { fontSize: params.GameTimerTextSize },
           { opacity: timerData.isGamePaused ? blinkingOpacity : 1 },
         ]}
       >
@@ -135,6 +140,12 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+  normalTimerArea: {
+    justifyContent: "center",
+    alignItems: "center",
+    height: standardHeight,
+    width: width,
+  },
   startButton: {
     width: 300,
     height: 300,
@@ -153,7 +164,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "rgba(200,200,200,0.3)",
-    height: 300,
+    //height: 300,
   },
   timer: {
     fontSize: 130,

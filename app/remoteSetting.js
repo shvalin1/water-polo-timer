@@ -15,6 +15,9 @@ import { checkTimerId } from "../firebase";
 export default function SettingsPage() {
   const [timerId, setTimerId] = useState(null); // タイマーID
   const [screen, setScreen] = useState("normal"); // 画面の種類
+  const [GameTimerTextSize, setGameTimerTextSize] = useState(100); // ゲームタイマーのフォントサイズ
+  const [ShotTimerTextSize, setShotTimerTextSize] = useState(100); // ショットクロックのフォントサイズ
+  const [ScoreTextSize, setScoreTextSize] = useState(100); // スコアのフォントサイズ
   const router = useRouter();
 
   const toRemoteTimerScreen = async () => {
@@ -39,6 +42,9 @@ export default function SettingsPage() {
       params: {
         timerId: timerId.toLowerCase(),
         screen,
+        GameTimerTextSize,
+        ShotTimerTextSize,
+        ScoreTextSize,
       },
     });
   };
@@ -93,6 +99,26 @@ export default function SettingsPage() {
             }
             keyboardType="email-address"
           />
+          <Text style={styles.label}>フォントサイズ:</Text>
+          <Input
+            value={GameTimerTextSize.toString()}
+            onChangeText={(text) => setGameTimerTextSize(Number(text))}
+            keyboardType="number-pad"
+            label="ゲームタイマー"
+          />
+          <Input
+            value={ShotTimerTextSize.toString()}
+            onChangeText={(text) => setShotTimerTextSize(Number(text))}
+            keyboardType="number-pad"
+            label="ショットクロック"
+          />
+          <Input
+            value={ScoreTextSize.toString()}
+            onChangeText={(text) => setScoreTextSize(Number(text))}
+            keyboardType="number-pad"
+            label="スコア"
+          />
+          <Text style={styles.label}>画面の種類:</Text>
           <TouchableOpacity
             onPress={onScreenPress}
             style={styles.checkBoxContainer}

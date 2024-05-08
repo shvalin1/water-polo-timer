@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef, useLayoutEffect } from "react";
 import {
   StyleSheet,
-  Dimensions,
   Animated,
   TouchableOpacity,
   BackHandler,
@@ -32,8 +31,20 @@ export default function RemoteTimer() {
   });
   const [now, setNow] = useState(0);
   const [ShotTimerNow, setShotTimerNow] = useState(0);
+  const [screen, setScreen] = useState("normal");
+  const [clockFontSize, setClockFontSize] = useState({
+    GameTimerTextSize: 100,
+    ShotTimerTextSize: 100,
+    ScoreTextSize: 100,
+  });
 
   useEffect(() => {
+    setScreen(params.screen);
+    setClockFontSize({
+      GameTimerTextSize: Number(params.GameTimerTextSize),
+      ShotTimerTextSize: Number(params.ShotTimerTextSize),
+      ScoreTextSize: Number(params.ScoreTextSize),
+    });
     const unsubscribe = onSnapshot(doc(db, "timers", params.timerId), (doc) => {
       const data = doc.data();
       if (data) {
@@ -151,29 +162,46 @@ export default function RemoteTimer() {
     }
   }, [timerData.isGamePaused, timerData.isShotClockPaused, blinkingOpacity]);
 
+  const onPress = () => {
+    setScreen((prevScreen) => {
+      switch (prevScreen) {
+        case "normal":
+          return "shotClock";
+        case "shotClock":
+          return "gameClock";
+        case "gameClock":
+          return "normal";
+        default:
+          return "normal";
+      }
+    });
+  };
+
   return (
     <TouchableOpacity onPress={onPress} style={styles.container}>
-      {params.screen == "normal" && (
+      {screen == "normal" && (
         <NormalTimer
           timerData={timerData}
           now={now}
           ShotTimerNow={ShotTimerNow}
           blinkingOpacity={blinkingOpacity}
+          params={clockFontSize}
         />
       )}
-      {params.screen == "gameClock" && (
+      {screen == "gameClock" && (
         <GameClock
           timerData={timerData}
           now={now}
           blinkingOpacity={blinkingOpacity}
+          params={clockFontSize}
         />
       )}
-      {params.screen == "shotClock" && (
+      {screen == "shotClock" && (
         <ShotClock
           timerData={timerData}
-          now={now}
           ShotTimerNow={ShotTimerNow}
           blinkingOpacity={blinkingOpacity}
+          params={clockFontSize}
         />
       )}
       <TouchableOpacity onPress={toHomeScreen} style={styles.homeButton}>
