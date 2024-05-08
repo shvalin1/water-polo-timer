@@ -14,6 +14,7 @@ import { checkTimerId } from "../firebase";
 
 export default function SettingsPage() {
   const [timerId, setTimerId] = useState(null); // タイマーID
+  const [screen, setScreen] = useState("normal"); // 画面の種類
   const router = useRouter();
 
   const toRemoteTimerScreen = async () => {
@@ -37,7 +38,23 @@ export default function SettingsPage() {
       pathname: "/remoteTimer",
       params: {
         timerId: timerId.toLowerCase(),
+        screen,
       },
+    });
+  };
+
+  const onScreenPress = () => {
+    setScreen((prevScreen) => {
+      switch (prevScreen) {
+        case "normal":
+          return "shotClock";
+        case "shotClock":
+          return "gameClock";
+        case "gameClock":
+          return "normal";
+        default:
+          return "normal";
+      }
     });
   };
 
@@ -76,6 +93,29 @@ export default function SettingsPage() {
             }
             keyboardType="email-address"
           />
+          <TouchableOpacity
+            onPress={onScreenPress}
+            style={styles.checkBoxContainer}
+          >
+            <CheckBox
+              title="通常タイマー"
+              checked={screen === "normal"}
+              onPress={() => setScreen("normal")}
+              textStyle={styles.checkBoxText}
+            />
+            <CheckBox
+              title="ショットクロック"
+              checked={screen === "shotClock"}
+              onPress={() => setScreen("shotClock")}
+              textStyle={styles.checkBoxText}
+            />
+            <CheckBox
+              title="ゲームクロック"
+              checked={screen === "gameClock"}
+              onPress={() => setScreen("gameClock")}
+              textStyle={styles.checkBoxText}
+            />
+          </TouchableOpacity>
           <Text
             style={{
               fontSize: 18,
@@ -118,6 +158,20 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 30, // 下の余白を追加
+  },
+  checkBoxContainer: {
+    //左寄せ
+    alignSelf: "flex-start",
+    //marginLeft: 20,
+    marginBottom: 30, // 下の余白を追加
+  },
+  checkBox: {
+    //左寄せ
+    alignSelf: "flex-start",
+    marginLeft: 20,
+  },
+  checkBoxText: {
+    fontSize: 18, // フォントサイズを大きく
   },
   backButton: {
     marginTop: 10, // 下の余白を追加

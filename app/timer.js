@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   Dimensions,
   Animated,
+  Platform,
 } from "react-native";
 import { Text } from "react-native-elements";
 import "expo-router/entry";
@@ -410,6 +411,9 @@ export default function Page() {
       <TouchableOpacity onPress={toHomeScreen} style={styles.homeButton}>
         <Icon name="ios-home" size={30} color="white" />
       </TouchableOpacity>
+      {isRemote && (
+        <Text style={styles.timerId}>TimerId: {params.timerId}</Text>
+      )}
       {!isStarted && (
         <View style={styles.startContainer}>
           <TouchableOpacity
@@ -531,6 +535,14 @@ const styles = StyleSheet.create({
   finishText: {
     fontSize: 75,
     color: "white",
+  },
+  timerId: {
+    fontSize: 20,
+    color: "white",
+    position: "absolute",
+    top: 0,
+    right: 0,
+    margin: 15,
   },
 });
 
