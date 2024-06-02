@@ -9,7 +9,7 @@ import { useRouter } from "expo-router";
 import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "../firebaseConfig";
 import { useLocalSearchParams } from "expo-router";
-import Icon from "react-native-vector-icons/Ionicons";
+import { Ionicons } from "@expo/vector-icons";
 import { ShotClock, GameClock, NormalTimer } from "../component/Clock";
 
 //ステータスバーの高さを引いた高さを取得する
@@ -205,7 +205,7 @@ export default function RemoteTimer() {
         />
       )}
       <TouchableOpacity onPress={toHomeScreen} style={styles.homeButton}>
-        <Icon name="ios-home" size={30} color="white" />
+        <Ionicons name="home" size={30} color="white" />
       </TouchableOpacity>
     </TouchableOpacity>
   );
