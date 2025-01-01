@@ -161,7 +161,8 @@ const styles = StyleSheet.create({
     backgroundColor: "black",
   },
   centerWrapper: {
-    justifyContent: "center",
+    flexDirection: "row",
+    justifyContent: "space-around",
     alignItems: "center",
     backgroundColor: "rgba(200,200,200,0.3)",
     //height: 300,
@@ -170,8 +171,11 @@ const styles = StyleSheet.create({
     fontSize: 130,
     margin: 10,
     color: "white",
+    //位置を調整
+    textAlignVertical: "center",
   },
   score: {
+    paddingHorizontal: 20,
     fontSize: 50,
     margin: 0,
     color: "white",
@@ -197,9 +201,7 @@ const styles = StyleSheet.create({
   timerArea: {
     justifyContent: "center",
     alignItems: "center",
-    height: standardHeight,
     width: width,
-    //backgroundColor: "rgba(200,200,200,0.)",
   },
   buttonText: {
     fontSize: 60,

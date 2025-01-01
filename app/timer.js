@@ -11,7 +11,7 @@ import { Text } from "react-native-elements";
 import "expo-router/entry";
 import moment from "moment";
 import Constants from "expo-constants";
-import Icon from "react-native-vector-icons/Ionicons";
+import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { firebaseFunctions, deleteTimer } from "../firebase";
@@ -409,7 +409,7 @@ export default function Page() {
         )}
       </TouchableOpacity>
       <TouchableOpacity onPress={toHomeScreen} style={styles.homeButton}>
-        <Icon name="ios-home" size={30} color="white" />
+        <Ionicons name="home" size={30} color="white" />
       </TouchableOpacity>
       {isRemote && (
         <Text style={styles.timerId}>TimerId: {params.timerId}</Text>

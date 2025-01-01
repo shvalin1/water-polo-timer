@@ -1,8 +1,9 @@
 import React from "react";
 import { StyleSheet, View } from "react-native";
 import { Button, Text } from "react-native-elements";
-import Icon from "react-native-vector-icons/Ionicons";
+import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 export default function Page() {
   const router = useRouter();
@@ -38,21 +39,27 @@ export default function Page() {
       </Text>
       <View style={styles.main}>
         <Button
-          icon={<Icon name="ios-timer" size={30} color="white" />}
+          icon={<Ionicons name="timer-outline" size={30} color="white" />}
           title="タイマー画面へ"
           buttonStyle={styles.button}
           onPress={toTimerScreen}
           titleStyle={{ fontSize: 25 }}
         />
         <Button
-          icon={<Icon name="ios-settings" size={30} color="white" />}
+          icon={<Ionicons name="settings-outline" size={30} color="white" />}
           title="設定画面へ"
           buttonStyle={styles.button}
           onPress={toSettingScreen}
           titleStyle={{ fontSize: 25 }}
         />
         <Button
-          icon={<Icon name="ios-settings" size={30} color="white" />}
+          icon={
+            <MaterialCommunityIcons
+              name="cellphone-wireless"
+              size={30}
+              color="white"
+            />
+          }
           title="リモート設定へ"
           buttonStyle={styles.button}
           onPress={toRemoteSetting}
