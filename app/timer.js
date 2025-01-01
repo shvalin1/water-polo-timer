@@ -35,6 +35,7 @@ export default function Page() {
   const [shotTimerIntervalId, setShotTimerIntervalId] = useState();
   const [shotTimerLastLap, setShotTimerLastLap] = useState(0);
   const [shotTimerGameTime, setShotTimerGameTime] = useState(30000);
+  const [reShotTime, setReShotTime] = useState(20000);
   const [shotTimerIsStarted, setShotTimerIsStarted] = useState(false);
   const [isTimerLinked, setIsTimerLinked] = useState(false);
   const [teamAName, setTeamAName] = useState("Blue"); // チームAの名前
@@ -50,9 +51,10 @@ export default function Page() {
   const router = useRouter();
 
   useEffect(() => {
-    if (params && params.gameTime && params.shotTime) {
+    if (params && params.gameTime && params.shotTime && params.reShotTime) {
       setGameTime(params.gameTime);
       setShotTimerGameTime(params.shotTime);
+      setReShotTime(params.reShotTime);
       setTimerLinkedFrom(params.pauseTime);
       setIsTimerLinked(params.pauseLinked === "true");
       setTeamAName(params.teamAName);
@@ -377,10 +379,10 @@ export default function Page() {
         </TouchableOpacity>
         <View style={styles.buttonContainer}>
           <TouchableOpacity
-            onPress={() => handleShotTimerReset("20000")}
+            onPress={() => handleShotTimerReset(params.reShotTime)}
             style={[styles.resetButton, { backgroundColor: "red" }]}
           >
-            <Text style={styles.buttonText}>20</Text>
+            <Text style={styles.buttonText}>{params.reShotTime / 1000}</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => handleShotTimerReset(params.shotTime)}

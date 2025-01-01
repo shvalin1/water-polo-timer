@@ -15,6 +15,7 @@ import { generateTimerId, createTimer } from "../firebase";
 export default function SettingsPage() {
   const [gameTime, setGameTime] = useState("4800"); // ゲームタイムの初期値
   const [shotTime, setShotTime] = useState("300"); // ショットクロックの初期値
+  const [reShotTime, setReShotTime] = useState("200"); // リショットクロックの初期値
   const [teamAName, setTeamAName] = useState("Blue"); // チームAの名前
   const [teamBName, setTeamBName] = useState("White"); // チームBの名前
   const [pauseLinked, setPauseLinked] = useState(true); // pauseの連動設定
@@ -28,6 +29,7 @@ export default function SettingsPage() {
     const params = {
       gameTime: parseInt(gameTime * 100),
       shotTime: parseInt(shotTime * 100),
+      reShotTime: parseInt(reShotTime * 100),
       pauseTime: parseInt(pauseTime * 100),
       teamAName,
       teamBName,
@@ -131,6 +133,26 @@ export default function SettingsPage() {
               onPress={() =>
                 setShotTime(String(Math.min(600, parseInt(shotTime) + 50)))
               }
+              style={styles.timeAdjustButton}
+            >
+              <Text>+ 5秒</Text>
+            </TouchableOpacity>
+          </View>
+          <Text style={styles.label}>リショットクロック:</Text>
+          <View style={styles.timeAdjustContainer}>
+            <TouchableOpacity
+              onPress={() =>
+                setReShotTime(String(Math.max(0, parseInt(reShotTime) - 50)))
+              }
+              style={styles.timeAdjustButton}
+            >
+              <Text>- 5秒</Text>
+            </TouchableOpacity>
+            <Text style={styles.timeDisplay}>
+              {Math.floor(parseInt(reShotTime) / 10)}秒
+            </Text>
+            <TouchableOpacity
+              onPress={() => setReShotTime(String(Math.min(600, parseInt(reShotTime) + 50)))}
               style={styles.timeAdjustButton}
             >
               <Text>+ 5秒</Text>
